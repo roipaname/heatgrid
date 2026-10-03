@@ -1,0 +1,10 @@
+[project]
+name = "heatgrid"
+version = "0.1.0"
+description = "Resource-aware MPI heat diffusion using domain decomposition for Johannesburg urban heat scenarios"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "mpi4py>=3.1.5",
+]

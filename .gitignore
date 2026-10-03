@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+uv.lock
+
+node_modules/
+frontend/dist/
+
+results/raw/*.csv
+frontend/public/data/*.json
+
+.DS_Store
