@@ -1,0 +1,15 @@
+{
+  "name": "full",
+  "about": "Experiment suite behind the paper. Scaling sweep (RQ1, RQ2) plus a scenario sweep at 1000x1000 on 2 ranks.",
+  "variants": ["sequential", "slab_blocking", "slab_nonblocking", "cartesian_blocking", "cartesian_nonblocking"],
+  "steps": 200,
+  "r": 0.2,
+  "trials": 5,
+  "warmup": 1,
+  "order_seed": 7919,
+  "mpiexec_args": [],
+  "sweeps": [
+    {"label": "scaling", "grids": [[500, 500], [1000, 1000], [2000, 2000]], "procs": [1, 2, 4], "scenarios": ["single_hotspot"]},
+    {"label": "scenario", "grids": [[1000, 1000]], "procs": [2], "scenarios": ["uniform", "multiple_hotspots", "gradient"]}
+  ]
+}

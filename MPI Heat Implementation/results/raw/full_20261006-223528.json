@@ -1,0 +1,83 @@
+{
+  "config_file": "config/full.json",
+  "config": {
+    "name": "full",
+    "about": "Experiment suite behind the paper. Scaling sweep (RQ1, RQ2) plus a scenario sweep at 1000x1000 on 2 ranks.",
+    "variants": [
+      "sequential",
+      "slab_blocking",
+      "slab_nonblocking",
+      "cartesian_blocking",
+      "cartesian_nonblocking"
+    ],
+    "steps": 200,
+    "r": 0.2,
+    "trials": 5,
+    "warmup": 1,
+    "order_seed": 7919,
+    "mpiexec_args": [],
+    "sweeps": [
+      {
+        "label": "scaling",
+        "grids": [
+          [
+            500,
+            500
+          ],
+          [
+            1000,
+            1000
+          ],
+          [
+            2000,
+            2000
+          ]
+        ],
+        "procs": [
+          1,
+          2,
+          4
+        ],
+        "scenarios": [
+          "single_hotspot"
+        ]
+      },
+      {
+        "label": "scenario",
+        "grids": [
+          [
+            1000,
+            1000
+          ]
+        ],
+        "procs": [
+          2
+        ],
+        "scenarios": [
+          "uniform",
+          "multiple_hotspots",
+          "gradient"
+        ]
+      }
+    ]
+  },
+  "started": "20261006-223528",
+  "environment": {
+    "python": "3.11.13",
+    "numpy": "2.4.6",
+    "mpi4py": "4.1.2",
+    "mpi_library": "MPICH Version:      4.3.2",
+    "mpiexec": [
+      "HYDRA build details:",
+      "    Version:                                 4.3.2",
+      "    Release Date:                            Mon Oct  6 11:14:20 AM CDT 2025"
+    ],
+    "platform": "macOS-10.16-x86_64-i386-64bit",
+    "machine": "x86_64",
+    "cpu": "Intel(R) Core(TM) i5-7360U CPU @ 2.30GHz",
+    "git_commit": "c37967a435f3efeb868ac27e182fb48a8ab564ec"
+  },
+  "failed": [],
+  "finished": "20261006-233310",
+  "wall_seconds": 3462.0
+}

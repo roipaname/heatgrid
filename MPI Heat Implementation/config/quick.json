@@ -1,0 +1,14 @@
+{
+  "name": "quick",
+  "about": "Small demo run, about a minute on a 2-core laptop. Checks the pipeline end to end, not used in the paper.",
+  "variants": ["sequential", "slab_blocking", "slab_nonblocking", "cartesian_blocking", "cartesian_nonblocking"],
+  "steps": 100,
+  "r": 0.2,
+  "trials": 5,
+  "warmup": 1,
+  "order_seed": 7919,
+  "mpiexec_args": [],
+  "sweeps": [
+    {"label": "demo", "grids": [[256, 256]], "procs": [1, 2], "scenarios": ["single_hotspot"]}
+  ]
+}

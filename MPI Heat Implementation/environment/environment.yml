@@ -1,0 +1,10 @@
+# conda env create -f environment/environment.yml
+name: heatgrid
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - numpy=2.4
+  - mpich=4.3
+  - mpi4py=4.1
+  - matplotlib=3.11
