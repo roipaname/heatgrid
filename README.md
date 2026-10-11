@@ -19,6 +19,7 @@ qualitative classes of thermal structure reported for Johannesburg, not measured
 Explicit forward-time centred-space (FTCS) five-point stencil for the 2D heat equation on the
 unit square with Dirichlet boundaries:
 
+
 ```
 u'(i,j) = u(i,j) + r * (u(i+1,j) + u(i-1,j) + u(i,j+1) + u(i,j-1) - 4*u(i,j))
 ```
