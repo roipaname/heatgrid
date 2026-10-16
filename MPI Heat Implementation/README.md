@@ -49,6 +49,8 @@ communication. Speedup is always measured against `sequential`, not the
 README.md
 AI_USE.md                AI assistance declaration
 DATA.md                  where the input data comes from (generated, seeded)
+DEMO.md                  10-minute recording run-sheet
+PRESENTATION_README.md   slide-by-slide source notes for the presentation
 src/
   heat.py                CLI: runs one configuration (check, warm-up, trials)
   heatgrid/
@@ -61,12 +63,18 @@ scripts/
   run_experiments.py     runs a config, writes raw trial rows
   summarise.py           raw -> medians, IQR, speedup, efficiency, RQ tables
   make_figures.py        processed tables -> paper/figures
+  show_results.py        prints the processed tables in the terminal
+  validate.py            prints the correctness evidence (analytic error, MPI vs sequential)
   quick_demo.sh          tests + quick config in one go
-config/                  quick.json (demo), full.json (paper)
+  export_frontend.py     processed tables -> frontend/public/data (dashboard JSON)
+  demo_server.py         local server: serves the dashboard, runs heat.py/validate.py for the Live demo tab
+config/                  quick.json (demo), full.json (paper), extended.json (M1, up to 8 processes)
 results/raw/             unedited trial-level CSVs + run metadata (.json)
 results/processed/       summary and RQ tables made by summarise.py
 paper/figures/           every figure used in the paper (PNG + PDF)
 environment/             environment.yml, requirements.txt, tested_versions.md
+frontend/                React dashboard (Vite): results, correctness, live demo, simulation
+archive/                 the first prototype (old backend + docs), kept for history only
 ```
 
 ## Requirements and install
@@ -114,6 +122,11 @@ What they check:
   too many ranks for the grid, `sequential` under `mpiexec -n 2`) exit with a
   clear error and a non-zero status
 
+`python scripts/validate.py` (a few seconds) prints the numbers behind the
+first and third checks: the error against the exact solution on 41², 81² and
+161² grids with the convergence ratio, and the max error of each MPI variant
+against sequential on 2 and 4 processes.
+
 Each `src/heat.py` run also checks itself before timing anything. It runs the
 MPI version once, gathers the field on rank 0, compares it with the
 sequential result and exits with status 1 if they differ by more than
@@ -138,12 +151,48 @@ mpiexec -n 2 python src/heat.py --variant slab_nonblocking --rows 500 --cols 500
 python src/heat.py --help
 ```
 
+## Dashboard
+
+A React dashboard in `frontend/` shows the recorded results (dataset switcher:
+paper suite, extended M1 suite, quick config), the per-configuration
+correctness checks, a browser simulation of the stencil and the scenario
+fields. Its **Live demo** tab runs the real programs through
+`scripts/demo_server.py`:
+
+1. **Correctness:** runs `scripts/validate.py` and explains the analytic error,
+   the convergence ratio and the exact MPI/sequential match.
+2. **Sequential and MPI:** runs both on the same input (grid, scenario and
+   seed, steps, trials), shows each exact command, the process count and the
+   raw output.
+3. **Comparison:** changes one thing (communication mode, decomposition,
+   process count or grid size), runs each configuration and explains the result.
+
+It needs Node.js 18+ once, to build:
+
+```bash
+cd frontend && npm install && npm run build && cd ..
+python scripts/export_frontend.py      # results/processed -> frontend/public/data
+python scripts/demo_server.py          # http://localhost:8000
+```
+
+For frontend development, run `npm run dev` in `frontend/` (port 5173). It
+forwards `/api` to the demo server, which must also be running. The server
+only listens on 127.0.0.1, accepts only `heat.py`'s own options (checked
+against fixed lists and ranges), never uses a shell, and runs one job at a
+time.
+
+The **extended** dataset (`config/extended.json`) is an extra run on an
+Apple M1 (8 cores: 4 performance + 4 efficiency) with up to 8 processes. It
+was measured on a different machine from the paper results and isn't used
+in the paper.
+
 ## Reproducing the full experiment suite
 
 ```bash
 python scripts/run_experiments.py config/full.json
 python scripts/summarise.py            # newest results/raw/full_*.csv
 python scripts/make_figures.py
+python scripts/show_results.py         # print the summary tables
 ```
 
 `config/full.json` has 54 configurations:

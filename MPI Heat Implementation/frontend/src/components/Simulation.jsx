@@ -4,7 +4,7 @@ import { heatColor } from "../heatColor.js";
 const SIZE = 60; // matches scenario_previews.json preview resolution
 const R_MAX = 0.25;
 
-/** Exact port of backend/heat.py::stencil_update -- same five-point FTCS
+/** Port of src/heatgrid/core/stencil.py::step, the same five-point FTCS
  * formula, same boundary-preservation rule (outermost ring never updated). */
 function stepStencil(u, size, r) {
   const next = u.slice();
@@ -59,8 +59,9 @@ function blockDistribute(n, nprocs, rank) {
   return [localN, start];
 }
 
-const PROCESS_GRID_DIMS = { 1: [1, 1], 2: [1, 2], 4: [2, 2] };
-const RANK_COLORS = ["#3f7c6e", "#c8582f", "#ad7b1f", "#6b7fb3"];
+// what MPI.Compute_dims(p, [0, 0]) returns, as used by the D2 Cartesian solver
+const PROCESS_GRID_DIMS = { 1: [1, 1], 2: [2, 1], 4: [2, 2], 8: [4, 2] };
+const RANK_COLORS = ["#3f7c6e", "#c8582f", "#ad7b1f", "#6b7fb3", "#7a5c99", "#2f8a9e", "#9e6b2f", "#5c7a3a"];
 
 function DecompositionDiagram({ decomposition, processes, rows, cols }) {
   const [pRow, pCol] = decomposition === "slab" ? [processes, 1] : PROCESS_GRID_DIMS[processes];
@@ -135,7 +136,7 @@ export default function Simulation({ previews }) {
   if (!previews || scenarios.length === 0) {
     return (
       <div className="card">
-        <div className="empty-state">Run <code>python backend/export_json.py</code> to generate scenario fields to simulate.</div>
+        <div className="empty-state">Run <code>python scripts/export_frontend.py</code> to generate scenario fields to simulate.</div>
       </div>
     );
   }
@@ -148,7 +149,7 @@ export default function Simulation({ previews }) {
       <div className="card">
         <h2>Live diffusion simulation<span className="badge">runs in your browser</span></h2>
         <p className="subtitle">
-          The exact five-point FTCS stencil from <code>backend/heat.py</code>, re-implemented in
+          The five-point FTCS stencil from <code>src/heatgrid/core/stencil.py</code>, re-implemented in
           JavaScript and run client-side on the real seeded scenario field (60×60 preview
           resolution), with no server round-trip. This is what every implementation computes each
           timestep; they differ only in how the grid is split and halos exchanged.
@@ -197,8 +198,9 @@ export default function Simulation({ previews }) {
       <div className="card">
         <h2>Domain decomposition geometry</h2>
         <p className="subtitle">
-          How the same grid gets split across processes. Built from <code>MPI_Dims_create</code>-style
-          process grids and the exact block-distribution rule in <code>backend/decomposition.py</code>.
+          How the same grid gets split across processes, using the process grid <code>MPI.Compute_dims</code>
+          picks and the block rule in <code>src/heatgrid/core/partition.py</code> (the first n % p blocks get one extra row or column).
+          With 2 processes both decompositions give the same 2x1 split. A real 2D split starts at 4.
         </p>
         <div className="filters" style={{ marginBottom: 16 }}>
           <div className="filter-group">
@@ -211,7 +213,7 @@ export default function Simulation({ previews }) {
           <div className="filter-group">
             <label>Processes</label>
             <div className="segmented">
-              {[1, 2, 4].map((p) => (
+              {[1, 2, 4, 8].map((p) => (
                 <button key={p} className={processes === p ? "active" : ""} onClick={() => setProcesses(p)}>{p}</button>
               ))}
             </div>

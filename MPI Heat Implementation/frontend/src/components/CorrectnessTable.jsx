@@ -1,23 +1,26 @@
-import { ABS_TOLERANCE, REL_TOLERANCE, IMPL_LABELS } from "../constants.js";
+import { IMPL_LABELS, TOLERANCE } from "../constants.js";
 
 export default function CorrectnessTable({ rows }) {
   const relevant = rows
-    .filter((r) => r.implementation !== "sequential" && r.status === "ok")
-    .sort((a, b) => a.rows - b.rows || a.nprocs - b.nprocs || a.implementation.localeCompare(b.implementation));
+    .filter((r) => r.implementation !== "sequential")
+    .sort((a, b) => a.rows - b.rows || a.scenario.localeCompare(b.scenario) || a.nprocs - b.nprocs
+      || a.implementation.localeCompare(b.implementation));
 
-  const passCount = relevant.filter((r) =>
-    r.max_abs_err != null && (r.max_abs_err <= ABS_TOLERANCE || r.max_rel_err <= REL_TOLERANCE)
-  ).length;
+  const pass = (r) => r.max_abs_err != null && r.max_abs_err <= TOLERANCE && r.checksums_match;
+  const passCount = relevant.filter(pass).length;
 
   return (
     <div className="card">
       <h2>Correctness</h2>
       <p className="subtitle">
-        Every MPI run is compared cell-by-cell against the sequential reference for the same
-        grid, scenario, seed and timestep count. PASS if max absolute error ≤ {ABS_TOLERANCE.toExponential(0)}{" "}
-        or max relative error ≤ {REL_TOLERANCE.toExponential(0)}, since floating-point reduction
-        order differs across decompositions, so exact bit-equality isn't the bar.
-        {relevant.length > 0 && <strong> {passCount}/{relevant.length} checks pass.</strong>}
+        Before timing anything, every MPI run gathers its field on rank 0 and compares it cell by cell
+        with a sequential run on the same grid, scenario, seed, r and step count. The run exits with an
+        error if the difference is above {TOLERANCE.toExponential(0)}. Every variant does the same
+        arithmetic per cell, so the expected difference is exactly 0. Each trial's checksum must also
+        match.
+        {relevant.length > 0 && <strong> {passCount}/{relevant.length} configurations pass.</strong>}
+        {" "}The analytic check (error against the exact decaying-sine solution, second-order convergence)
+        is in <code>scripts/validate.py</code> and the Live demo tab.
       </p>
       {relevant.length === 0 ? (
         <div className="empty-state">No measured results available yet.</div>
@@ -28,32 +31,31 @@ export default function CorrectnessTable({ rows }) {
               <th>Implementation</th>
               <th>Grid</th>
               <th>Processes</th>
+              <th>Process grid</th>
               <th>Scenario</th>
-              <th>Max abs error</th>
-              <th>Mean abs error</th>
-              <th>Max rel error</th>
+              <th>Max abs error vs sequential</th>
+              <th>Trial checksums</th>
               <th>Result</th>
             </tr>
           </thead>
           <tbody>
-            {relevant.map((r, i) => {
-              const pass = r.max_abs_err != null &&
-                (r.max_abs_err <= ABS_TOLERANCE || r.max_rel_err <= REL_TOLERANCE);
-              return (
-                <tr key={i}>
-                  <td>{IMPL_LABELS[r.implementation] || r.implementation}</td>
-                  <td>{r.rows}×{r.cols}</td>
-                  <td>{r.nprocs}</td>
-                  <td>{r.scenario.replace("_", " ")}</td>
-                  <td>{r.max_abs_err != null ? r.max_abs_err.toExponential(2) : "N/A"}</td>
-                  <td>{r.mean_abs_err != null ? r.mean_abs_err.toExponential(2) : "N/A"}</td>
-                  <td>{r.max_rel_err != null ? r.max_rel_err.toExponential(2) : "N/A"}</td>
-                  <td><span className={`status-pill ${pass ? "pass" : "fail"}`}>{pass ? "PASS" : "FAIL"}</span></td>
-                </tr>
-              );
-            })}
+            {relevant.map((r, i) => (
+              <tr key={i}>
+                <td>{IMPL_LABELS[r.implementation] || r.implementation}</td>
+                <td>{r.rows}×{r.cols}</td>
+                <td>{r.nprocs}{r.oversubscribed ? " *" : ""}</td>
+                <td>{r.proc_grid}</td>
+                <td>{r.scenario.replace("_", " ")}</td>
+                <td>{r.max_abs_err != null ? r.max_abs_err.toExponential(1) : "N/A"}</td>
+                <td>{r.checksums_match ? "identical" : "differ"}</td>
+                <td><span className={`status-pill ${pass(r) ? "pass" : "fail"}`}>{pass(r) ? "PASS" : "FAIL"}</span></td>
+              </tr>
+            ))}
           </tbody>
         </table>
+      )}
+      {relevant.some((r) => r.oversubscribed) && (
+        <p className="subtitle" style={{ marginTop: 10, marginBottom: 0 }}>* oversubscribed (more ranks than physical cores)</p>
       )}
     </div>
   );

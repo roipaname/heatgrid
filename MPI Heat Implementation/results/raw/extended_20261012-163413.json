@@ -1,0 +1,85 @@
+{
+  "config_file": "config/extended.json",
+  "config": {
+    "name": "extended",
+    "about": "Extra dataset for the dashboard, run on the Apple M1 (8 cores: 4 performance + 4 efficiency). Same protocol as full.json, plus 8 processes and the scenario sweep at 2 and 4 processes. Not the paper results: those are full.json on the 2-core i5.",
+    "variants": [
+      "sequential",
+      "slab_blocking",
+      "slab_nonblocking",
+      "cartesian_blocking",
+      "cartesian_nonblocking"
+    ],
+    "steps": 200,
+    "r": 0.2,
+    "trials": 5,
+    "warmup": 1,
+    "order_seed": 7919,
+    "mpiexec_args": [],
+    "sweeps": [
+      {
+        "label": "scaling",
+        "grids": [
+          [
+            500,
+            500
+          ],
+          [
+            1000,
+            1000
+          ],
+          [
+            2000,
+            2000
+          ]
+        ],
+        "procs": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "scenarios": [
+          "single_hotspot"
+        ]
+      },
+      {
+        "label": "scenario",
+        "grids": [
+          [
+            1000,
+            1000
+          ]
+        ],
+        "procs": [
+          2,
+          4
+        ],
+        "scenarios": [
+          "uniform",
+          "multiple_hotspots",
+          "gradient"
+        ]
+      }
+    ]
+  },
+  "started": "20261012-163413",
+  "environment": {
+    "python": "3.11.17",
+    "numpy": "2.4.6",
+    "mpi4py": "4.1.2",
+    "mpi_library": "MPICH Version:      4.3.2",
+    "mpiexec": [
+      "HYDRA build details:",
+      "    Version:                                 4.3.2",
+      "    Release Date:                            Mon Oct  6 11:14:20 AM CDT 2025"
+    ],
+    "platform": "macOS-15.6.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "cpu": "Apple M1",
+    "git_commit": "92fdbe1acd03cad612683bacc66bb74291b81fec"
+  },
+  "failed": [],
+  "finished": "20261012-170110",
+  "wall_seconds": 1615.9
+}

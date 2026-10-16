@@ -1,0 +1,86 @@
+{
+ "dataset": "extended",
+ "source": "extended_20261012-163413.csv",
+ "total_configurations": 78,
+ "ok_configurations": 78,
+ "failed_configurations": 0,
+ "trials": 5,
+ "steps": 200,
+ "grid_sizes": [
+  "500x500",
+  "1000x1000",
+  "2000x2000"
+ ],
+ "process_counts": [
+  1,
+  2,
+  4,
+  8
+ ],
+ "implementations": [
+  "cartesian_blocking",
+  "cartesian_nonblocking",
+  "sequential",
+  "slab_blocking",
+  "slab_nonblocking"
+ ],
+ "scenarios": [
+  "gradient",
+  "multiple_hotspots",
+  "single_hotspot",
+  "uniform"
+ ],
+ "correctness_checked": 72,
+ "correctness_passed": 72,
+ "best_speedup": {
+  "variant": "cartesian_nonblocking",
+  "nprocs": 2,
+  "rows": 500,
+  "cols": 500,
+  "scenario": "single_hotspot",
+  "steps": 200,
+  "decomposition": "cartesian",
+  "comm_mode": "nonblocking",
+  "proc_grid": "2x1",
+  "trials": 5,
+  "median_s": 0.127142,
+  "q1_s": 0.124629,
+  "q3_s": 0.128377,
+  "iqr_s": 0.003748,
+  "min_s": 0.109592,
+  "max_s": 0.146792,
+  "median_comm_s": 0.029712,
+  "comm_fraction": 0.233691,
+  "max_abs_err": 0.0,
+  "checksums_match": true,
+  "oversubscribed": false,
+  "source": "extended_20261012-163413.csv",
+  "speedup": 2.1343,
+  "efficiency": 1.06715,
+  "implementation": "cartesian_nonblocking",
+  "status": "ok",
+  "parallel_efficiency": 1.06715,
+  "median_comm_fraction": 0.233691
+ },
+ "oversubscribed_configurations": 0,
+ "run": {
+  "environment": {
+   "python": "3.11.17",
+   "numpy": "2.4.6",
+   "mpi4py": "4.1.2",
+   "mpi_library": "MPICH Version:      4.3.2",
+   "mpiexec": [
+    "HYDRA build details:",
+    "    Version:                                 4.3.2",
+    "    Release Date:                            Mon Oct  6 11:14:20 AM CDT 2025"
+   ],
+   "platform": "macOS-15.6.1-arm64-arm-64bit",
+   "machine": "arm64",
+   "cpu": "Apple M1",
+   "git_commit": "92fdbe1acd03cad612683bacc66bb74291b81fec"
+  },
+  "wall_seconds": 1615.9,
+  "started": "20261012-163413",
+  "failed": 0
+ }
+}

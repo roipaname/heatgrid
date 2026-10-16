@@ -1,0 +1,29 @@
+[
+ {
+  "name": "full",
+  "label": "Paper suite (i5, 2 cores)",
+  "machine": "Intel Core i5-7360U, 2 physical / 4 logical cores, 8 GB RAM, macOS 13",
+  "physical_cores": 2,
+  "note": "The results behind the paper. 4 processes are oversubscribed on this machine.",
+  "source": "full_20261006-223528.csv",
+  "configurations": 54
+ },
+ {
+  "name": "extended",
+  "label": "Extended (Apple M1, 8 cores)",
+  "machine": "Apple M1, 8 cores (4 performance + 4 efficiency), macOS",
+  "physical_cores": 8,
+  "note": "Extra runs for the dashboard on a different machine, up to 8 processes. The 8-process runs mix performance and efficiency cores. Not the paper results.",
+  "source": "extended_20261012-163413.csv",
+  "configurations": 78
+ },
+ {
+  "name": "quick",
+  "label": "Quick demo config",
+  "machine": "see the run metadata",
+  "physical_cores": null,
+  "note": "256x256, 100 steps. Checks that the pipeline works, not a performance result.",
+  "source": "quick_20261006-233558.csv",
+  "configurations": 9
+ }
+]

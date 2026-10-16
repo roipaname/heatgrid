@@ -1,12 +1,11 @@
 import { useEffect, useRef } from "react";
 import { heatColor } from "../heatColor.js";
 
-function Tile({ scenario, preview }) {
+function Field({ values, size, min, max }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
-    if (!preview) return;
-    const { size, min, max, values } = preview;
+    if (!values) return;
     const canvas = canvasRef.current;
     canvas.width = size;
     canvas.height = size;
@@ -25,13 +24,24 @@ function Tile({ scenario, preview }) {
       }
     }
     ctx.putImageData(img, 0, 0);
-  }, [preview]);
+  }, [values, size, min, max]);
 
+  return <canvas ref={canvasRef} style={{ imageRendering: "pixelated" }} />;
+}
+
+function Tile({ scenario, preview }) {
+  const { size, min, max } = preview;
   return (
     <div className="scenario-tile">
-      <canvas ref={canvasRef} style={{ imageRendering: "pixelated" }} />
+      <div className="pair">
+        <div><Field values={preview.values} size={size} min={min} max={max} /><div className="caption">start</div></div>
+        {preview.after && (
+          <div><Field values={preview.after} size={size} min={min} max={max} />
+            <div className="caption">after {preview.after_steps} steps</div></div>
+        )}
+      </div>
       <div className="label">{scenario.replace("_", " ")}</div>
-      <div className="caption">synthetic model field · not measured temperature</div>
+      <div className="caption">synthetic field, not measured temperature (same colour scale in both)</div>
     </div>
   );
 }
@@ -42,11 +52,12 @@ export default function ScenarioHeatmap({ previews }) {
     <div className="card">
       <h2>Scenario fields</h2>
       <p className="subtitle">
-        Seeded synthetic initial conditions (unit square, Dirichlet boundaries). These are
-        qualitative thermal structures, not real Johannesburg temperature observations.
+        Seeded synthetic initial conditions from <code>src/heatgrid/core/scenarios.py</code> (unit square,
+        fixed boundaries), shown at 60x60 before and after diffusion with the sequential solver. These
+        are qualitative thermal patterns, not real Johannesburg temperature observations.
       </p>
       {scenarios.length === 0 ? (
-        <div className="empty-state">Run <code>python backend/export_json.py</code> to generate previews.</div>
+        <div className="empty-state">Run <code>python scripts/export_frontend.py</code> to generate previews.</div>
       ) : (
         <div className="scenario-grid">
           {scenarios.map((s) => (

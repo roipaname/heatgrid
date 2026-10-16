@@ -3,16 +3,16 @@ import { MetricSmallMultiples, LegendRow } from "./Charts.jsx";
 
 const METRICS = [
   { key: "median_s", label: "Runtime", unit: "s",
-    subtitle: "Median timestep-loop wall-clock time (10 trials, first discarded)." },
+    subtitle: "Median time-step-loop time of the slowest rank, over the measured trials (warm-up dropped)." },
   { key: "speedup", label: "Speedup", unit: "×",
     subtitle: "Relative to the optimized sequential baseline, not the 1-process MPI run." },
   { key: "parallel_efficiency", label: "Efficiency", unit: "",
-    subtitle: "Speedup / processes. Values above 1.0 at p=4 reflect oversubscribing this machine's 2 physical cores." },
+    subtitle: "Speedup / processes. Oversubscribed points (more ranks than physical cores) are a stress test, not scaling evidence." },
   { key: "median_comm_fraction", label: "Comm. fraction", unit: "",
     subtitle: "Communication time / total timestep-loop time (median across trials)." },
 ];
 
-export default function Benchmarks({ rows }) {
+export default function Benchmarks({ rows, dataset }) {
   const scenarios = useMemo(() => [...new Set(rows.map((r) => r.scenario))].sort(), [rows]);
   const [scenario, setScenario] = useState(scenarios[0] || "");
   const [metricKey, setMetricKey] = useState("median_s");
@@ -37,8 +37,8 @@ export default function Benchmarks({ rows }) {
       <div className="card">
         <div className="empty-state">
           No measured results available yet.<br />
-          Run <code>python backend/run_matrix.py scaling</code>, then{" "}
-          <code>python backend/export_json.py</code>.
+          Run <code>python scripts/summarise.py</code>, then{" "}
+          <code>python scripts/export_frontend.py</code>.
         </div>
       </div>
     );
@@ -79,6 +79,11 @@ export default function Benchmarks({ rows }) {
       <LegendRow />
       <p className="subtitle" style={{ marginTop: -8 }}>{metric.subtitle}</p>
       <MetricSmallMultiples rowsByGrid={rowsByGrid} valueKey={metric.key} unit={metric.unit} />
+      {dataset?.physical_cores && (
+        <p className="subtitle" style={{ marginTop: 12, marginBottom: 0 }}>
+          {dataset.label}: process counts above {dataset.physical_cores} are oversubscribed. {dataset.note}
+        </p>
+      )}
     </div>
   );
 }

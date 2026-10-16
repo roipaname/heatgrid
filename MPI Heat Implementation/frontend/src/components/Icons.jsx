@@ -66,3 +66,13 @@ export function ScenariosIcon(props) {
     </svg>
   );
 }
+
+export function TerminalIcon(props) {
+  return (
+    <svg {...base} {...props}>
+      <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+      <path d="M7 10l3 2.5L7 15" />
+      <path d="M12.5 15.5H17" />
+    </svg>
+  );
+}

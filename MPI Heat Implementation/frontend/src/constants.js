@@ -19,5 +19,5 @@ export const IMPL_LABELS = {
   cartesian_nonblocking: "2D Cartesian · non-blocking",
 };
 
-export const ABS_TOLERANCE = 1e-8;
-export const REL_TOLERANCE = 1e-6;
+// src/heatgrid/checks.py: MPI vs sequential must agree to within this (in practice it's exactly 0)
+export const TOLERANCE = 1e-12;

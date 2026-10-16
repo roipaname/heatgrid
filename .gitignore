@@ -1,12 +1,10 @@
 __pycache__/
 *.pyc
 .venv/
-uv.lock
+.DS_Store
 
 node_modules/
-frontend/dist/
+MPI Heat Implementation/frontend/dist/
 
-results/raw/*.csv
-frontend/public/data/*.json
-
-.DS_Store
+# Screen recordings (too large for GitHub, >100 MB)
+*.mov

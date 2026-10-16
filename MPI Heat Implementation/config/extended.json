@@ -1,0 +1,15 @@
+{
+  "name": "extended",
+  "about": "Extra dataset for the dashboard, run on the Apple M1 (8 cores: 4 performance + 4 efficiency). Same protocol as full.json, plus 8 processes and the scenario sweep at 2 and 4 processes. Not the paper results: those are full.json on the 2-core i5.",
+  "variants": ["sequential", "slab_blocking", "slab_nonblocking", "cartesian_blocking", "cartesian_nonblocking"],
+  "steps": 200,
+  "r": 0.2,
+  "trials": 5,
+  "warmup": 1,
+  "order_seed": 7919,
+  "mpiexec_args": [],
+  "sweeps": [
+    {"label": "scaling", "grids": [[500, 500], [1000, 1000], [2000, 2000]], "procs": [1, 2, 4, 8], "scenarios": ["single_hotspot"]},
+    {"label": "scenario", "grids": [[1000, 1000]], "procs": [2, 4], "scenarios": ["uniform", "multiple_hotspots", "gradient"]}
+  ]
+}
